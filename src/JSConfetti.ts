@@ -1,6 +1,6 @@
 import { fixDPR } from './fixDPR'
 import { ConfettiShape } from './ConfettiShape'
-import { createCanvas } from './createCanvas'
+import { createCanvases } from './createCanvas'
 import { normalizeConfettiConfig } from './normalizeConfettiConfig'
 import { IPosition, IJSConfettiConfig, IAddConfettiConfig } from './types'
 
@@ -56,8 +56,11 @@ class ConfettiBatch {
 }
 
 class JSConfetti {
-  private readonly canvas: HTMLCanvasElement
-  private readonly canvasContext: CanvasRenderingContext2D
+
+  private readonly canvasLeft: HTMLCanvasElement;
+  private readonly canvasRight: HTMLCanvasElement;
+  private readonly canvasLeftContext: CanvasRenderingContext2D;
+  private readonly canvasRightContext: CanvasRenderingContext2D;
 
   private activeConfettiBatches: ConfettiBatch[]
   private lastUpdated: number
@@ -67,8 +70,13 @@ class JSConfetti {
 
   public constructor(jsConfettiConfig: IJSConfettiConfig = {}) {
     this.activeConfettiBatches = []
-    this.canvas = jsConfettiConfig.canvas || createCanvas()
-    this.canvasContext = <CanvasRenderingContext2D>this.canvas.getContext('2d')
+    
+    const [left, right] = createCanvases();
+    this.canvasLeft = left;
+    this.canvasRight = right;
+    this.canvasLeftContext = <CanvasRenderingContext2D>this.canvasLeft.getContext('2d')
+    this.canvasRightContext = <CanvasRenderingContext2D>this.canvasRight.getContext('2d')
+
     this.requestAnimationFrameRequested = false
 
     this.lastUpdated = new Date().getTime()
@@ -82,12 +90,12 @@ class JSConfetti {
   private loop(): void {
     this.requestAnimationFrameRequested = false
 
-    fixDPR(this.canvas)
+    fixDPR([this.canvasLeft, this.canvasRight])
 
     const currentTime = new Date().getTime()
     const timeDelta = currentTime - this.lastUpdated
 
-    const canvasHeight = this.canvas.offsetHeight
+    const canvasHeight = this.canvasLeft.offsetHeight
     const cleanupInvisibleShapes = (this.iterationIndex % 10 === 0)
 
     this.activeConfettiBatches = this.activeConfettiBatches.filter((batch) => {
@@ -127,7 +135,7 @@ class JSConfetti {
     requestAnimationFrame(this.loop)
   }
 
-  public addConfetti(confettiConfig: IAddConfettiConfig = {}): Promise<void> {
+  public addConfetti(confettiConfig: IAddConfettiConfig = {}): Promise<[void, void]> {
     const {
       confettiRadius,
       confettiNumber,
@@ -141,7 +149,7 @@ class JSConfetti {
     // confetti being immediately queued on a page load, this hasn't happened so
     // the default of 300x150 will be returned, causing an improper source point
     // for the confetti animation.
-    const canvasRect = this.canvas.getBoundingClientRect()
+    const canvasRect = this.canvasLeft.getBoundingClientRect()
     const canvasWidth = canvasRect.width
     const canvasHeight = canvasRect.height
 
@@ -156,7 +164,8 @@ class JSConfetti {
       y: yPosition,
     }
 
-    const confettiGroup = new ConfettiBatch(this.canvasContext)
+    const confettiGroupLeft = new ConfettiBatch(this.canvasLeftContext)
+    const confettiGroupRight = new ConfettiBatch(this.canvasRightContext)
 
     for (let i = 0; i < confettiNumber / 2; i++) {
       const confettiOnTheRight = new ConfettiShape({
@@ -181,14 +190,15 @@ class JSConfetti {
         canvasWidth,
       })
 
-      confettiGroup.addShapes(confettiOnTheRight, confettiOnTheLeft)
+      confettiGroupRight.addShapes(confettiOnTheRight)
+      confettiGroupLeft.addShapes(confettiOnTheLeft)
     }
 
-    this.activeConfettiBatches.push(confettiGroup)
+    this.activeConfettiBatches.push(confettiGroupRight, confettiGroupLeft);
 
     this.queueAnimationFrameIfNeeded()
 
-    return confettiGroup.getBatchCompletePromise()
+    return Promise.all([confettiGroupRight.getBatchCompletePromise(), confettiGroupLeft.getBatchCompletePromise()]);
   }
 
   public clearCanvas(): void {
@@ -196,7 +206,8 @@ class JSConfetti {
   }
 
   public destroyCanvas(): void {
-    this.canvas.remove()
+    this.canvasLeft.remove()
+    this.canvasRight.remove()
   }
 }
 

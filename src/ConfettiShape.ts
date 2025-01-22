@@ -23,6 +23,7 @@ import {
 
   SHAPE_VISIBILITY_TRESHOLD,
 } from './consts'
+import { randomChoice } from './randomFunctions'
 
 
 // For wide screens - fast confetti, for small screens - slow confetti
@@ -37,6 +38,23 @@ interface TConstructorArgs extends INormalizedAddConfettiConfig {
   direction: TConfettiDirection,
   canvasWidth: number,
 }
+
+
+function createEmojiCanvas(emoji: string, size: number) {
+  const canvas = document.createElement('canvas')
+  canvas.width = size*2;
+  canvas.height = size*2;
+  const canvasContext = <CanvasRenderingContext2D>canvas.getContext('2d');
+
+  canvasContext.font = `${size}px serif`
+  canvasContext.textAlign = 'center'
+  canvasContext.fillText(emoji, size, size)
+
+  canvasContext.save()
+  return canvas;
+
+}
+const PreRenderedEmojis = new Map<string, HTMLCanvasElement>();
 
 class ConfettiShape {
   private confettiSpeed: ISpeed
@@ -60,6 +78,7 @@ class ConfettiShape {
 
   private readonly color: string | null
   private readonly emoji: string | null
+  private readonly canvas: HTMLCanvasElement | undefined |null
 
   private radiusYUpdateDirection: 'up' | 'down'
 
@@ -118,9 +137,14 @@ class ConfettiShape {
     this.currentPosition = { ...shiftedInitialPosition }
     this.initialPosition = { ...shiftedInitialPosition }
 
-    this.color = emojis.length ? null : generateRandomArrayElement(confettiColors)
-    this.emoji = emojis.length ? generateRandomArrayElement(emojis) : null
+    this.color = emojis.length ? null : randomChoice(confettiColors)
+    this.emoji = emojis.length ? randomChoice(emojis) : null
+    this.canvas = PreRenderedEmojis.get(`${this.emoji}:${emojiSize}`);
+    if (this.emoji && !this.canvas) {
+      this.canvas = createEmojiCanvas(this.emoji, emojiSize);
+      PreRenderedEmojis.set(`${this.emoji}:${emojiSize}`, this.canvas)
 
+    }
     this.createdAt = new Date().getTime()
     this.direction = direction
   }
@@ -134,6 +158,7 @@ class ConfettiShape {
       rotationAngle,
       emojiRotationAngle,
       emojiSize,
+      canvas
     } = this
     const dpr = window.devicePixelRatio
 
@@ -148,13 +173,10 @@ class ConfettiShape {
       )
       canvasContext.fill()
     } else if (emoji) {
-      canvasContext.font = `${emojiSize}px serif`
-
       canvasContext.save()
       canvasContext.translate(dpr * currentPosition.x, dpr * currentPosition.y)
       canvasContext.rotate(emojiRotationAngle)
-      canvasContext.textAlign = 'center'
-      canvasContext.fillText(emoji, 0, 0)
+      canvasContext.drawImage(canvas as HTMLCanvasElement, 0, 0)
       canvasContext.restore()
     }
   }

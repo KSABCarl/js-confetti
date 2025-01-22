@@ -1,17 +1,14 @@
-function normalizeComputedStyleValue(string: string): number {
-  // "250px" --> 250
-  return +string.replace(/px/, '')
-}
-
-function fixDPR(canvas: HTMLCanvasElement): void {
+function fixDPR(canvases: Array<HTMLCanvasElement>): void {
   const dpr = window.devicePixelRatio
-  const computedStyles = getComputedStyle(canvas)
+  const computedStyles = getComputedStyle(canvases[0])
 
-  const width = normalizeComputedStyleValue(computedStyles.getPropertyValue('width'))
-  const height = normalizeComputedStyleValue(computedStyles.getPropertyValue('height'))
-
-  canvas.setAttribute('width', (width * dpr).toString())
-  canvas.setAttribute('height', (height * dpr).toString())
+  const width = parseInt(computedStyles.getPropertyValue('width'))
+  const height = parseInt(computedStyles.getPropertyValue('height'))
+  const side = Math.min(width, height);
+  canvases.forEach(canvas => {
+    canvas.setAttribute('width', (side * dpr).toString())
+    canvas.setAttribute('height', (side * dpr).toString())
+  })
 }
 
 export { fixDPR }
