@@ -1,36 +1,37 @@
-import typescript from 'rollup-plugin-typescript2'
-import babel from '@rollup/plugin-babel'
-import { terser } from 'rollup-plugin-terser'
+import typescript from "@rollup/plugin-typescript";
+import babel from "@rollup/plugin-babel";
+import { terser } from "rollup-plugin-terser";
 
 export default [
   // ES
   {
-    input: 'src/index.ts',
+    input: "src/index.ts",
     output: {
-      file: 'dist/es/index.js', format: 'es',
+      file: "dist/es/index.js",
+      format: "es",
     },
     plugins: [
       typescript(),
       babel({
-        extensions: ['.ts'],
+        extensions: [".ts"],
       }),
-    ]
+    ],
   },
 
   // UMD
   {
-    input: 'src/index.ts',
+    input: "src/index.ts",
     output: {
-      file: 'dist/js-confetti.min.js',
-      format: 'umd',
-      name: 'jsConfetti',
+      file: "dist/js-confetti.min.js",
+      format: "umd",
+      name: "jsConfetti",
       indent: false,
     },
     plugins: [
       typescript(),
       babel({
-        extensions: ['.ts'],
-        exclude: 'node_modules/**',
+        extensions: [".ts"],
+        exclude: "node_modules/**",
       }),
       terser(),
     ],
@@ -38,19 +39,19 @@ export default [
 
   // IIFE
   {
-    input: 'src/index.ts',
+    input: "src/index.ts",
     output: {
-      file: 'dist/js-confetti.browser.js',
-      format: 'iife',
-      name: 'JSConfetti',
+      file: "dist/js-confetti.browser.js",
+      format: "iife",
+      name: "JSConfetti",
     },
     plugins: [
       typescript(),
       babel({
-        extensions: ['.ts'],
-        exclude: 'node_modules/**',
+        extensions: [".ts"],
+        exclude: "node_modules/**",
       }),
       terser(),
     ],
   },
-]
+];

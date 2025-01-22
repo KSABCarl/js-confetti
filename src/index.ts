@@ -1,3 +1,3 @@
-import { JSConfetti } from './JSConfetti'
+import { JSConfetti } from "./JSConfetti";
 
-export default JSConfetti
+export default JSConfetti;

@@ -1,7 +1,7 @@
-import { generateRandomNumber } from './generateRandomNumber'
+import { generateRandomNumber } from "./generateRandomNumber";
 
 function generateRandomArrayElement<T>(arr: T[]): T {
-  return arr[generateRandomNumber(0, arr.length)]
+  return arr[generateRandomNumber(0, arr.length)];
 }
 
-export { generateRandomArrayElement }
+export { generateRandomArrayElement };
