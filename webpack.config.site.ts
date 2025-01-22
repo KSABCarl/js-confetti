@@ -1,14 +1,19 @@
 /* eslint-env node */
+const path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin =require('html-webpack-plugin');
+const CopyWebpackPlugin =require('copy-webpack-plugin');
+const ForkTsCheckerWebpackPlugin =require('fork-ts-checker-webpack-plugin');
 
-import { Configuration } from 'webpack'
-import path from 'path'
-import HtmlWebpackPlugin from 'html-webpack-plugin'
-import CopyWebpackPlugin from 'copy-webpack-plugin'
-import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin'
+// import { Configuration } from 'webpack'
+// import path from 'path'
+// import HtmlWebpackPlugin from 'html-webpack-plugin'
+// import CopyWebpackPlugin from 'copy-webpack-plugin'
+// import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin'
 
 const isProd = process.env.NODE_ENV === 'production'
 
-const config: Configuration = {
+module.exports = {
   mode: isProd ? 'production' : 'development',
   entry: './site/index.tsx',
   output: {
@@ -35,14 +40,17 @@ const config: Configuration = {
       patterns: [{ from: 'static' }],
     })
   ],
-}
 
-if (!isProd) {
-  config.devServer = {
-    contentBase: path.join(__dirname, 'site_dist'),
-    compress: true,
-    port: 9000
-  }
-}
+  
+  devServer: !isProd ? {
 
-module.exports = config
+    static: {
+      directory: path.join(__dirname, 'site_dist'),
+    },
+    open: 'index.html',
+    client: {
+      logging: 'warn',
+      overlay: false,
+    }
+  } : null
+}
