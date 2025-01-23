@@ -131,7 +131,11 @@ function createEmojiCanvas(emoji, size) {
   var canvasContext = canvas.getContext("2d");
   canvasContext.font = "".concat(size, "px serif");
   canvasContext.textAlign = "center";
-  canvasContext.fillText(emoji, size, size);
+  canvasContext.textBaseline = "middle";
+  var _canvasContext$measur = canvasContext.measureText(emoji),
+    actualBoundingBoxAscent = _canvasContext$measur.actualBoundingBoxAscent,
+    actualBoundingBoxDescent = _canvasContext$measur.actualBoundingBoxDescent;
+  canvasContext.fillText(emoji, size / 2, size / 2 + (actualBoundingBoxAscent - actualBoundingBoxDescent) / 2);
   canvasContext.save();
   return canvas;
 }

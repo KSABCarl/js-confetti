@@ -45,7 +45,14 @@ function createEmojiCanvas(emoji: string, size: number) {
 
   canvasContext.font = `${size}px serif`;
   canvasContext.textAlign = "center";
-  canvasContext.fillText(emoji, size, size);
+  canvasContext.textBaseline = "middle";
+  let { actualBoundingBoxAscent, actualBoundingBoxDescent } =
+    canvasContext.measureText(emoji);
+  canvasContext.fillText(
+    emoji,
+    size / 2,
+    size / 2 + (actualBoundingBoxAscent - actualBoundingBoxDescent) / 2
+  );
 
   canvasContext.save();
   return canvas;
