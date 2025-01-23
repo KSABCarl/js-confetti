@@ -1,6 +1,6 @@
 import typescript from "@rollup/plugin-typescript";
-import babel from "@rollup/plugin-babel";
-import { terser } from "rollup-plugin-terser";
+import commonjs from "@rollup/plugin-commonjs";
+import terser from "@rollup/plugin-terser";
 
 export default [
   // ES
@@ -12,9 +12,10 @@ export default [
     },
     plugins: [
       typescript(),
-      babel({
-        extensions: [".ts"],
-      }),
+      commonjs(),
+      // babel({
+      //   extensions: [".ts"],
+      // }),
     ],
   },
 
@@ -29,10 +30,11 @@ export default [
     },
     plugins: [
       typescript(),
-      babel({
-        extensions: [".ts"],
-        exclude: "node_modules/**",
-      }),
+      commonjs(),
+      // babel({
+      //   extensions: [".ts"],
+      //   exclude: "node_modules/**",
+      // }),
       terser(),
     ],
   },
@@ -47,10 +49,11 @@ export default [
     },
     plugins: [
       typescript(),
-      babel({
-        extensions: [".ts"],
-        exclude: "node_modules/**",
-      }),
+      commonjs(),
+      // babel({
+      //   extensions: [".ts"],
+      //   exclude: "node_modules/**",
+      // }),
       terser(),
     ],
   },

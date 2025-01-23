@@ -1,482 +1,357 @@
-function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-function _defineProperties(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor) descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-function _createClass(Constructor, protoProps, staticProps) {
-  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-  if (staticProps) _defineProperties(Constructor, staticProps);
-  return Constructor;
-}
-function _slicedToArray(arr, i) {
-  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
-}
-function _toConsumableArray(arr) {
-  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
-}
-function _arrayWithoutHoles(arr) {
-  if (Array.isArray(arr)) return _arrayLikeToArray(arr);
-}
-function _arrayWithHoles(arr) {
-  if (Array.isArray(arr)) return arr;
-}
-function _iterableToArray(iter) {
-  if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
-}
-function _iterableToArrayLimit(arr, i) {
-  if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
-  var _arr = [];
-  var _n = true;
-  var _d = false;
-  var _e = undefined;
-  try {
-    for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-      _arr.push(_s.value);
-      if (i && _arr.length === i) break;
-    }
-  } catch (err) {
-    _d = true;
-    _e = err;
-  } finally {
-    try {
-      if (!_n && _i["return"] != null) _i["return"]();
-    } finally {
-      if (_d) throw _e;
-    }
-  }
-  return _arr;
-}
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor) n = o.constructor.name;
-  if (n === "Map" || n === "Set") return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
-}
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
-  return arr2;
-}
-function _nonIterableSpread() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-function _nonIterableRest() {
-  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-
 function fixDPR(canvases) {
-  var dpr = window.devicePixelRatio;
-  var computedStyles = getComputedStyle(canvases[0]);
-  var width = parseInt(computedStyles.getPropertyValue("width"));
-  var height = parseInt(computedStyles.getPropertyValue("height"));
-  var side = Math.min(width, height);
-  canvases.forEach(function (canvas) {
-    canvas.setAttribute("width", (side * dpr).toString());
-    canvas.setAttribute("height", (side * dpr).toString());
-  });
+    const dpr = window.devicePixelRatio;
+    const computedStyles = getComputedStyle(canvases[0]);
+    const width = parseInt(computedStyles.getPropertyValue("width"));
+    const height = parseInt(computedStyles.getPropertyValue("height"));
+    const side = Math.min(width, height);
+    canvases.forEach((canvas) => {
+        canvas.setAttribute("width", (side * dpr).toString());
+        canvas.setAttribute("height", (side * dpr).toString());
+    });
 }
 
-function generateRandomNumber(min, max) {
-  var fractionDigits = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-  var randomNumber = Math.random() * (max - min) + min;
-  return Math.floor(randomNumber * Math.pow(10, fractionDigits)) / Math.pow(10, fractionDigits);
+function generateRandomNumber(min, max, fractionDigits = 0) {
+    const randomNumber = Math.random() * (max - min) + min;
+    return Math.floor(randomNumber * Math.pow(10, fractionDigits)) / Math.pow(10, fractionDigits);
 }
 
-var FREE_FALLING_OBJECT_ACCELERATION = 0.00125;
-var MIN_DRAG_FORCE_COEFFICIENT = 0.0005;
-var MAX_DRAG_FORCE_COEFFICIENT = 0.0009;
-var ROTATION_SLOWDOWN_ACCELERATION = 0.00001;
-var INITIAL_SHAPE_RADIUS = 6;
-var INITIAL_EMOJI_SIZE = 80;
-var MIN_INITIAL_CONFETTI_SPEED = 0.9;
-var MAX_INITIAL_CONFETTI_SPEED = 1.7;
-var MIN_FINAL_X_CONFETTI_SPEED = 0.2;
-var MAX_FINAL_X_CONFETTI_SPEED = 0.6;
-var MIN_INITIAL_ROTATION_SPEED = 0.03;
-var MAX_INITIAL_ROTATION_SPEED = 0.07;
-var MIN_CONFETTI_ANGLE = 15;
-var MAX_CONFETTI_ANGLE = 82;
-var MAX_CONFETTI_POSITION_SHIFT = 150;
-var SHAPE_VISIBILITY_TRESHOLD = 100;
-var DEFAULT_CONFETTI_NUMBER = 250;
-var DEFAULT_EMOJIS_NUMBER = 40;
-var DEFAULT_CONFETTI_COLORS = ["#fcf403", "#62fc03", "#f4fc03", "#03e7fc", "#03fca5", "#a503fc", "#fc03ad", "#fc03c2"];
+const FREE_FALLING_OBJECT_ACCELERATION = 0.00125;
+const MIN_DRAG_FORCE_COEFFICIENT = 0.0005;
+const MAX_DRAG_FORCE_COEFFICIENT = 0.0009;
+const ROTATION_SLOWDOWN_ACCELERATION = 0.00001;
+const INITIAL_SHAPE_RADIUS = 6;
+const INITIAL_EMOJI_SIZE = 80;
+const MIN_INITIAL_CONFETTI_SPEED = 0.9;
+const MAX_INITIAL_CONFETTI_SPEED = 1.7;
+const MIN_FINAL_X_CONFETTI_SPEED = 0.2;
+const MAX_FINAL_X_CONFETTI_SPEED = 0.6;
+const MIN_INITIAL_ROTATION_SPEED = 0.03;
+const MAX_INITIAL_ROTATION_SPEED = 0.07;
+const MIN_CONFETTI_ANGLE = 15;
+const MAX_CONFETTI_ANGLE = 82;
+const SHAPE_VISIBILITY_TRESHOLD = 100;
+const DEFAULT_CONFETTI_NUMBER = 250;
+const DEFAULT_EMOJIS_NUMBER = 40;
+const DEFAULT_CONFETTI_COLORS = [
+    "#fcf403",
+    "#62fc03",
+    "#f4fc03",
+    "#03e7fc",
+    "#03fca5",
+    "#a503fc",
+    "#fc03ad",
+    "#fc03c2",
+];
 
 function randomChoice(arr) {
-  return _toConsumableArray(arr).sort(function () {
-    return 0.5 - Math.random();
-  })[0];
+    return [...arr].sort(() => 0.5 - Math.random())[0];
 }
 
 // For wide screens - fast confetti, for small screens - slow confetti
 function getWindowWidthCoefficient(canvasWidth) {
-  var HD_SCREEN_WIDTH = 1920;
-  return Math.log(canvasWidth) / Math.log(HD_SCREEN_WIDTH);
+    const HD_SCREEN_WIDTH = 1920;
+    return Math.log(canvasWidth) / Math.log(HD_SCREEN_WIDTH);
 }
 function createEmojiCanvas(emoji, size) {
-  var canvas = document.createElement("canvas");
-  canvas.width = size * 2;
-  canvas.height = size * 2;
-  var canvasContext = canvas.getContext("2d");
-  canvasContext.font = "".concat(size, "px serif");
-  canvasContext.textAlign = "center";
-  canvasContext.textBaseline = "middle";
-  var _canvasContext$measur = canvasContext.measureText(emoji),
-    actualBoundingBoxAscent = _canvasContext$measur.actualBoundingBoxAscent,
-    actualBoundingBoxDescent = _canvasContext$measur.actualBoundingBoxDescent;
-  canvasContext.fillText(emoji, size / 2, size / 2 + (actualBoundingBoxAscent - actualBoundingBoxDescent) / 2);
-  canvasContext.save();
-  return canvas;
+    const canvas = document.createElement("canvas");
+    canvas.width = size * 2;
+    canvas.height = size * 2;
+    const canvasContext = canvas.getContext("2d");
+    canvasContext.font = `${size}px serif`;
+    canvasContext.textAlign = "center";
+    canvasContext.textBaseline = "middle";
+    let { actualBoundingBoxAscent, actualBoundingBoxDescent } = canvasContext.measureText(emoji);
+    canvasContext.fillText(emoji, size / 2, size / 2 + (actualBoundingBoxAscent - actualBoundingBoxDescent) / 2);
+    canvasContext.save();
+    return canvas;
 }
-var PreRenderedEmojis = new Map();
-var ConfettiShape = /*#__PURE__*/function () {
-  function ConfettiShape(args) {
-    _classCallCheck(this, ConfettiShape);
-    var initialPosition = args.initialPosition,
-      direction = args.direction,
-      confettiRadius = args.confettiRadius,
-      confettiColors = args.confettiColors,
-      emojis = args.emojis,
-      emojiSize = args.emojiSize,
-      canvasWidth = args.canvasWidth;
-    var randomConfettiSpeed = generateRandomNumber(MIN_INITIAL_CONFETTI_SPEED, MAX_INITIAL_CONFETTI_SPEED, 3);
-    var initialSpeed = randomConfettiSpeed * getWindowWidthCoefficient(canvasWidth);
-    this.confettiSpeed = {
-      x: initialSpeed,
-      y: initialSpeed
-    };
-    this.finalConfettiSpeedX = generateRandomNumber(MIN_FINAL_X_CONFETTI_SPEED, MAX_FINAL_X_CONFETTI_SPEED, 3);
-    this.rotationSpeed = emojis.length ? 0.01 : generateRandomNumber(MIN_INITIAL_ROTATION_SPEED, MAX_INITIAL_ROTATION_SPEED, 3) * getWindowWidthCoefficient(canvasWidth);
-    this.dragForceCoefficient = generateRandomNumber(MIN_DRAG_FORCE_COEFFICIENT, MAX_DRAG_FORCE_COEFFICIENT, 6);
-    this.radius = {
-      x: confettiRadius,
-      y: confettiRadius
-    };
-    this.initialRadius = confettiRadius;
-    this.rotationAngle = direction === "left" ? generateRandomNumber(0, 0.2, 3) : generateRandomNumber(-0.2, 0, 3);
-    this.emojiSize = emojiSize;
-    this.emojiRotationAngle = generateRandomNumber(0, 2 * Math.PI);
-    this.radiusYUpdateDirection = "down";
-    var angle = direction === "left" ? generateRandomNumber(MAX_CONFETTI_ANGLE, MIN_CONFETTI_ANGLE) * Math.PI / 180 : generateRandomNumber(-MIN_CONFETTI_ANGLE, -MAX_CONFETTI_ANGLE) * Math.PI / 180;
-    this.absCos = Math.abs(Math.cos(angle));
-    this.absSin = Math.abs(Math.sin(angle));
-    var positionShift = generateRandomNumber(-MAX_CONFETTI_POSITION_SHIFT, 0);
-    var shiftedInitialPosition = {
-      x: initialPosition.x + (direction === "left" ? -positionShift : positionShift) * this.absCos,
-      y: initialPosition.y - positionShift * this.absSin
-    };
-    this.currentPosition = Object.assign({}, shiftedInitialPosition);
-    this.initialPosition = Object.assign({}, shiftedInitialPosition);
-    this.color = emojis.length ? null : randomChoice(confettiColors);
-    this.emoji = emojis.length ? randomChoice(emojis) : null;
-    this.canvas = PreRenderedEmojis.get("".concat(this.emoji, ":").concat(emojiSize));
-    if (this.emoji && !this.canvas) {
-      this.canvas = createEmojiCanvas(this.emoji, emojiSize);
-      PreRenderedEmojis.set("".concat(this.emoji, ":").concat(emojiSize), this.canvas);
-    }
-    this.createdAt = new Date().getTime();
-    this.direction = direction;
-  }
-  _createClass(ConfettiShape, [{
-    key: "draw",
-    value: function draw(canvasContext) {
-      var currentPosition = this.currentPosition,
-        radius = this.radius,
-        color = this.color,
-        emoji = this.emoji,
-        rotationAngle = this.rotationAngle,
-        emojiRotationAngle = this.emojiRotationAngle;
-        this.emojiSize;
-        var canvas = this.canvas;
-      var dpr = window.devicePixelRatio;
-      if (color) {
-        canvasContext.fillStyle = color;
-        canvasContext.beginPath();
-        canvasContext.ellipse(currentPosition.x * dpr, currentPosition.y * dpr, radius.x * dpr, radius.y * dpr, rotationAngle, 0, 2 * Math.PI);
-        canvasContext.fill();
-      } else if (emoji) {
-        canvasContext.save();
-        canvasContext.translate(dpr * currentPosition.x, dpr * currentPosition.y);
-        canvasContext.rotate(emojiRotationAngle);
-        canvasContext.drawImage(canvas, 0, 0);
-        canvasContext.restore();
-      }
-    }
-  }, {
-    key: "updatePosition",
-    value: function updatePosition(iterationTimeDelta, currentTime) {
-      var confettiSpeed = this.confettiSpeed,
-        dragForceCoefficient = this.dragForceCoefficient,
-        finalConfettiSpeedX = this.finalConfettiSpeedX,
-        radiusYUpdateDirection = this.radiusYUpdateDirection,
-        rotationSpeed = this.rotationSpeed,
-        createdAt = this.createdAt,
-        direction = this.direction;
-      var timeDeltaSinceCreation = currentTime - createdAt;
-      if (confettiSpeed.x > finalConfettiSpeedX) this.confettiSpeed.x -= dragForceCoefficient * iterationTimeDelta;
-      this.currentPosition.x += confettiSpeed.x * (direction === "left" ? -this.absCos : this.absCos) * iterationTimeDelta;
-      this.currentPosition.y = this.initialPosition.y - confettiSpeed.y * this.absSin * timeDeltaSinceCreation + FREE_FALLING_OBJECT_ACCELERATION * Math.pow(timeDeltaSinceCreation, 2) / 2;
-      this.rotationSpeed -= this.emoji ? 0.0001 : ROTATION_SLOWDOWN_ACCELERATION * iterationTimeDelta;
-      if (this.rotationSpeed < 0) this.rotationSpeed = 0;
-      // no need to update rotation radius for emoji
-      if (this.emoji) {
-        this.emojiRotationAngle += this.rotationSpeed * iterationTimeDelta % (2 * Math.PI);
-        return;
-      }
-      if (radiusYUpdateDirection === "down") {
-        this.radius.y -= iterationTimeDelta * rotationSpeed;
-        if (this.radius.y <= 0) {
-          this.radius.y = 0;
-          this.radiusYUpdateDirection = "up";
+const PreRenderedEmojis = new Map();
+class ConfettiShape {
+    constructor(args) {
+        const { initialPosition, direction, confettiRadius, confettiColors, emojis, emojiSize, canvasWidth, } = args;
+        const randomConfettiSpeed = generateRandomNumber(MIN_INITIAL_CONFETTI_SPEED, MAX_INITIAL_CONFETTI_SPEED, 3);
+        const initialSpeed = randomConfettiSpeed * getWindowWidthCoefficient(canvasWidth);
+        this.confettiSpeed = {
+            x: initialSpeed,
+            y: initialSpeed,
+        };
+        this.finalConfettiSpeedX = generateRandomNumber(MIN_FINAL_X_CONFETTI_SPEED, MAX_FINAL_X_CONFETTI_SPEED, 3);
+        this.rotationSpeed = emojis.length
+            ? 0.01
+            : generateRandomNumber(MIN_INITIAL_ROTATION_SPEED, MAX_INITIAL_ROTATION_SPEED, 3) * getWindowWidthCoefficient(canvasWidth);
+        this.dragForceCoefficient = generateRandomNumber(MIN_DRAG_FORCE_COEFFICIENT, MAX_DRAG_FORCE_COEFFICIENT, 6);
+        this.radius = {
+            x: confettiRadius,
+            y: confettiRadius,
+        };
+        this.initialRadius = confettiRadius;
+        this.rotationAngle =
+            direction === "left"
+                ? generateRandomNumber(0, 0.2, 3)
+                : generateRandomNumber(-0.2, 0, 3);
+        this.emojiSize = emojiSize;
+        this.emojiRotationAngle = generateRandomNumber(0, 2 * Math.PI);
+        this.radiusYUpdateDirection = "down";
+        const angle = direction === "left"
+            ? (generateRandomNumber(MAX_CONFETTI_ANGLE, MIN_CONFETTI_ANGLE) *
+                Math.PI) /
+                180
+            : (generateRandomNumber(-15, -82) *
+                Math.PI) /
+                180;
+        this.absCos = Math.abs(Math.cos(angle));
+        this.absSin = Math.abs(Math.sin(angle));
+        const positionShift = generateRandomNumber(-150, 0);
+        const shiftedInitialPosition = {
+            x: initialPosition.x +
+                (direction === "left" ? -positionShift : positionShift) * this.absCos,
+            y: initialPosition.y - positionShift * this.absSin,
+        };
+        this.currentPosition = Object.assign({}, shiftedInitialPosition);
+        this.initialPosition = Object.assign({}, shiftedInitialPosition);
+        this.color = emojis.length ? null : randomChoice(confettiColors);
+        this.emoji = emojis.length ? randomChoice(emojis) : null;
+        this.canvas = PreRenderedEmojis.get(`${this.emoji}:${emojiSize}`);
+        if (this.emoji && !this.canvas) {
+            this.canvas = createEmojiCanvas(this.emoji, emojiSize);
+            PreRenderedEmojis.set(`${this.emoji}:${emojiSize}`, this.canvas);
         }
-      } else {
-        this.radius.y += iterationTimeDelta * rotationSpeed;
-        if (this.radius.y >= this.initialRadius) {
-          this.radius.y = this.initialRadius;
-          this.radiusYUpdateDirection = "down";
+        this.createdAt = new Date().getTime();
+        this.direction = direction;
+    }
+    draw(canvasContext) {
+        const { currentPosition, radius, color, emoji, rotationAngle, emojiRotationAngle, emojiSize, canvas, } = this;
+        const dpr = window.devicePixelRatio;
+        if (color) {
+            canvasContext.fillStyle = color;
+            canvasContext.beginPath();
+            canvasContext.ellipse(currentPosition.x * dpr, currentPosition.y * dpr, radius.x * dpr, radius.y * dpr, rotationAngle, 0, 2 * Math.PI);
+            canvasContext.fill();
         }
-      }
+        else if (emoji) {
+            canvasContext.save();
+            canvasContext.translate(dpr * currentPosition.x, dpr * currentPosition.y);
+            canvasContext.rotate(emojiRotationAngle);
+            canvasContext.drawImage(canvas, 0, 0);
+            canvasContext.restore();
+        }
     }
-  }, {
-    key: "getIsVisibleOnCanvas",
-    value: function getIsVisibleOnCanvas(canvasHeight) {
-      return this.currentPosition.y < canvasHeight + SHAPE_VISIBILITY_TRESHOLD;
+    updatePosition(iterationTimeDelta, currentTime) {
+        const { confettiSpeed, dragForceCoefficient, finalConfettiSpeedX, radiusYUpdateDirection, rotationSpeed, createdAt, direction, } = this;
+        const timeDeltaSinceCreation = currentTime - createdAt;
+        if (confettiSpeed.x > finalConfettiSpeedX)
+            this.confettiSpeed.x -= dragForceCoefficient * iterationTimeDelta;
+        this.currentPosition.x +=
+            confettiSpeed.x *
+                (direction === "left" ? -this.absCos : this.absCos) *
+                iterationTimeDelta;
+        this.currentPosition.y =
+            this.initialPosition.y -
+                confettiSpeed.y * this.absSin * timeDeltaSinceCreation +
+                (FREE_FALLING_OBJECT_ACCELERATION * Math.pow(timeDeltaSinceCreation, 2)) / 2;
+        this.rotationSpeed -= this.emoji
+            ? 0.0001
+            : ROTATION_SLOWDOWN_ACCELERATION * iterationTimeDelta;
+        if (this.rotationSpeed < 0)
+            this.rotationSpeed = 0;
+        // no need to update rotation radius for emoji
+        if (this.emoji) {
+            this.emojiRotationAngle +=
+                (this.rotationSpeed * iterationTimeDelta) % (2 * Math.PI);
+            return;
+        }
+        if (radiusYUpdateDirection === "down") {
+            this.radius.y -= iterationTimeDelta * rotationSpeed;
+            if (this.radius.y <= 0) {
+                this.radius.y = 0;
+                this.radiusYUpdateDirection = "up";
+            }
+        }
+        else {
+            this.radius.y += iterationTimeDelta * rotationSpeed;
+            if (this.radius.y >= this.initialRadius) {
+                this.radius.y = this.initialRadius;
+                this.radiusYUpdateDirection = "down";
+            }
+        }
     }
-  }]);
-  return ConfettiShape;
-}();
+    getIsVisibleOnCanvas(canvasHeight) {
+        return this.currentPosition.y < canvasHeight + SHAPE_VISIBILITY_TRESHOLD;
+    }
+}
 
 function createCanvas(dir) {
-  var canvas = document.createElement("canvas");
-  var side = screen.width > screen.height ? screen.height : screen.width;
-  canvas.style.position = "fixed";
-  canvas.style.width = "".concat(side, "px");
-  canvas.style.height = "".concat(side, "px");
-  canvas.style.bottom = "0";
-  if (dir && dir === "right") {
-    canvas.style.right = "0";
-  } else {
-    canvas.style.left = "0";
-  }
-  canvas.style.zIndex = "1000";
-  canvas.style.pointerEvents = "none";
-  document.body.appendChild(canvas);
-  return canvas;
+    const canvas = document.createElement("canvas");
+    const side = screen.width > screen.height ? screen.height : screen.width;
+    canvas.style.position = "fixed";
+    canvas.style.width = `${side}px`;
+    canvas.style.height = `${side}px`;
+    canvas.style.bottom = "0";
+    if (dir && dir === "right") {
+        canvas.style.right = "0";
+    }
+    else {
+        canvas.style.left = "0";
+    }
+    canvas.style.zIndex = "1000";
+    canvas.style.pointerEvents = "none";
+    document.body.appendChild(canvas);
+    return canvas;
 }
 function createCanvases() {
-  return [createCanvas("right"), createCanvas("left")];
+    return [createCanvas("right"), createCanvas("left")];
 }
 
 function normalizeConfettiConfig(confettiConfig) {
-  var _confettiConfig$confe = confettiConfig.confettiRadius,
-    confettiRadius = _confettiConfig$confe === void 0 ? INITIAL_SHAPE_RADIUS : _confettiConfig$confe,
-    _confettiConfig$confe2 = confettiConfig.confettiNumber,
-    confettiNumber = _confettiConfig$confe2 === void 0 ? confettiConfig.confettiesNumber || (confettiConfig.emojis ? DEFAULT_EMOJIS_NUMBER : DEFAULT_CONFETTI_NUMBER) : _confettiConfig$confe2,
-    _confettiConfig$confe3 = confettiConfig.confettiColors,
-    confettiColors = _confettiConfig$confe3 === void 0 ? DEFAULT_CONFETTI_COLORS : _confettiConfig$confe3,
-    _confettiConfig$emoji = confettiConfig.emojis,
-    emojis = _confettiConfig$emoji === void 0 ? confettiConfig.emojies || [] : _confettiConfig$emoji,
-    _confettiConfig$emoji2 = confettiConfig.emojiSize,
-    emojiSize = _confettiConfig$emoji2 === void 0 ? INITIAL_EMOJI_SIZE : _confettiConfig$emoji2; // deprecate wrong plural forms, used in early releases
-  if (confettiConfig.emojies) console.error("emojies argument is deprecated, please use emojis instead");
-  if (confettiConfig.confettiesNumber) console.error("confettiesNumber argument is deprecated, please use confettiNumber instead");
-  return {
-    confettiRadius: confettiRadius,
-    confettiNumber: confettiNumber,
-    confettiColors: confettiColors,
-    emojis: emojis,
-    emojiSize: emojiSize
-  };
+    const { confettiRadius = INITIAL_SHAPE_RADIUS, confettiNumber = confettiConfig.confettiesNumber ||
+        (confettiConfig.emojis ? DEFAULT_EMOJIS_NUMBER : DEFAULT_CONFETTI_NUMBER), confettiColors = DEFAULT_CONFETTI_COLORS, emojis = confettiConfig.emojies || [], emojiSize = INITIAL_EMOJI_SIZE, } = confettiConfig;
+    // deprecate wrong plural forms, used in early releases
+    if (confettiConfig.emojies)
+        console.error(`emojies argument is deprecated, please use emojis instead`);
+    if (confettiConfig.confettiesNumber)
+        console.error(`confettiesNumber argument is deprecated, please use confettiNumber instead`);
+    return { confettiRadius, confettiNumber, confettiColors, emojis, emojiSize };
 }
 
-var ConfettiBatch = /*#__PURE__*/function () {
-  function ConfettiBatch(canvasContext) {
-    var _this = this;
-    _classCallCheck(this, ConfettiBatch);
-    this.canvasContext = canvasContext;
-    this.shapes = [];
-    this.promise = new Promise(function (completionCallback) {
-      return _this.resolvePromise = completionCallback;
-    });
-  }
-  _createClass(ConfettiBatch, [{
-    key: "getBatchCompletePromise",
-    value: function getBatchCompletePromise() {
-      return this.promise;
+class ConfettiBatch {
+    constructor(canvasContext) {
+        this.canvasContext = canvasContext;
+        this.shapes = [];
+        this.promise = new Promise((completionCallback) => (this.resolvePromise = completionCallback));
     }
-  }, {
-    key: "addShapes",
-    value: function addShapes() {
-      var _this$shapes;
-      (_this$shapes = this.shapes).push.apply(_this$shapes, arguments);
+    getBatchCompletePromise() {
+        return this.promise;
     }
-  }, {
-    key: "complete",
-    value: function complete() {
-      var _a;
-      if (this.shapes.length) {
-        return false;
-      }
-      (_a = this.resolvePromise) === null || _a === void 0 ? void 0 : _a.call(this);
-      return true;
+    addShapes(...shapes) {
+        this.shapes.push(...shapes);
     }
-  }, {
-    key: "processShapes",
-    value: function processShapes(time, canvasHeight, cleanupInvisibleShapes) {
-      var _this2 = this;
-      var timeDelta = time.timeDelta,
-        currentTime = time.currentTime;
-      this.shapes = this.shapes.filter(function (shape) {
-        // Render the shapes in this batch
-        shape.updatePosition(timeDelta, currentTime);
-        shape.draw(_this2.canvasContext);
-        // Only cleanup the shapes if we're being asked to
-        if (!cleanupInvisibleShapes) {
-          return true;
+    complete() {
+        var _a;
+        if (this.shapes.length) {
+            return false;
         }
-        return shape.getIsVisibleOnCanvas(canvasHeight);
-      });
+        (_a = this.resolvePromise) === null || _a === undefined ? undefined : _a.call(this);
+        return true;
     }
-  }]);
-  return ConfettiBatch;
-}();
-var JSConfetti = /*#__PURE__*/function () {
-  function JSConfetti() {
-    _classCallCheck(this, JSConfetti);
-    this.activeConfettiBatches = [];
-    var _createCanvases = createCanvases(),
-      _createCanvases2 = _slicedToArray(_createCanvases, 2),
-      left = _createCanvases2[0],
-      right = _createCanvases2[1];
-    this.canvasLeft = left;
-    this.canvasRight = right;
-    this.canvasLeftContext = this.canvasLeft.getContext("2d");
-    this.canvasRightContext = this.canvasRight.getContext("2d");
-    this.requestAnimationFrameRequested = false;
-    this.lastUpdated = new Date().getTime();
-    this.iterationIndex = 0;
-    this.loop = this.loop.bind(this);
-    requestAnimationFrame(this.loop);
-  }
-  _createClass(JSConfetti, [{
-    key: "loop",
-    value: function loop() {
-      this.requestAnimationFrameRequested = false;
-      fixDPR([this.canvasLeft, this.canvasRight]);
-      var currentTime = new Date().getTime();
-      var timeDelta = currentTime - this.lastUpdated;
-      var canvasHeight = this.canvasLeft.offsetHeight;
-      var cleanupInvisibleShapes = this.iterationIndex % 10 === 0;
-      this.activeConfettiBatches = this.activeConfettiBatches.filter(function (batch) {
-        batch.processShapes({
-          timeDelta: timeDelta,
-          currentTime: currentTime
-        }, canvasHeight, cleanupInvisibleShapes);
-        // Do not remove invisible shapes on every iteration
-        if (!cleanupInvisibleShapes) {
-          return true;
+    processShapes(time, canvasHeight, cleanupInvisibleShapes) {
+        const { timeDelta, currentTime } = time;
+        this.shapes = this.shapes.filter((shape) => {
+            // Render the shapes in this batch
+            shape.updatePosition(timeDelta, currentTime);
+            shape.draw(this.canvasContext);
+            // Only cleanup the shapes if we're being asked to
+            if (!cleanupInvisibleShapes) {
+                return true;
+            }
+            return shape.getIsVisibleOnCanvas(canvasHeight);
+        });
+    }
+}
+class JSConfetti {
+    constructor(jsConfettiConfig = {}) {
+        this.activeConfettiBatches = [];
+        const [left, right] = createCanvases();
+        this.canvasLeft = left;
+        this.canvasRight = right;
+        this.canvasLeftContext = (this.canvasLeft.getContext("2d"));
+        this.canvasRightContext = (this.canvasRight.getContext("2d"));
+        this.requestAnimationFrameRequested = false;
+        this.lastUpdated = new Date().getTime();
+        this.iterationIndex = 0;
+        this.loop = this.loop.bind(this);
+        requestAnimationFrame(this.loop);
+    }
+    loop() {
+        this.requestAnimationFrameRequested = false;
+        fixDPR([this.canvasLeft, this.canvasRight]);
+        const currentTime = new Date().getTime();
+        const timeDelta = currentTime - this.lastUpdated;
+        const canvasHeight = this.canvasLeft.offsetHeight;
+        const cleanupInvisibleShapes = this.iterationIndex % 10 === 0;
+        this.activeConfettiBatches = this.activeConfettiBatches.filter((batch) => {
+            batch.processShapes({ timeDelta, currentTime }, canvasHeight, cleanupInvisibleShapes);
+            // Do not remove invisible shapes on every iteration
+            if (!cleanupInvisibleShapes) {
+                return true;
+            }
+            return !batch.complete();
+        });
+        this.iterationIndex++;
+        this.queueAnimationFrameIfNeeded(currentTime);
+    }
+    queueAnimationFrameIfNeeded(currentTime) {
+        if (this.requestAnimationFrameRequested) {
+            // We already have a pended animation frame, so there is no more work
+            return;
         }
-        return !batch.complete();
-      });
-      this.iterationIndex++;
-      this.queueAnimationFrameIfNeeded(currentTime);
+        if (this.activeConfettiBatches.length < 1) {
+            // No shapes to animate, so don't queue another frame
+            return;
+        }
+        this.requestAnimationFrameRequested = true;
+        // Capture the last updated time for animation
+        this.lastUpdated = currentTime || new Date().getTime();
+        requestAnimationFrame(this.loop);
     }
-  }, {
-    key: "queueAnimationFrameIfNeeded",
-    value: function queueAnimationFrameIfNeeded(currentTime) {
-      if (this.requestAnimationFrameRequested) {
-        // We already have a pended animation frame, so there is no more work
-        return;
-      }
-      if (this.activeConfettiBatches.length < 1) {
-        // No shapes to animate, so don't queue another frame
-        return;
-      }
-      this.requestAnimationFrameRequested = true;
-      // Capture the last updated time for animation
-      this.lastUpdated = currentTime || new Date().getTime();
-      requestAnimationFrame(this.loop);
+    addConfetti(confettiConfig = {}) {
+        const { confettiRadius, confettiNumber, confettiColors, emojis, emojiSize, } = normalizeConfettiConfig(confettiConfig);
+        // Use the bounding rect rather tahn the canvas width / height, because
+        // .width / .height are unset until a layout pass has been completed. Upon
+        // confetti being immediately queued on a page load, this hasn't happened so
+        // the default of 300x150 will be returned, causing an improper source point
+        // for the confetti animation.
+        const canvasRect = this.canvasLeft.getBoundingClientRect();
+        const canvasWidth = canvasRect.width;
+        const canvasHeight = canvasRect.height;
+        const yPosition = (canvasHeight * 5) / 7;
+        const leftConfettiPosition = {
+            x: 0,
+            y: yPosition,
+        };
+        const rightConfettiPosition = {
+            x: canvasWidth,
+            y: yPosition,
+        };
+        const confettiGroupLeft = new ConfettiBatch(this.canvasLeftContext);
+        const confettiGroupRight = new ConfettiBatch(this.canvasRightContext);
+        for (let i = 0; i < confettiNumber / 2; i++) {
+            const confettiOnTheRight = new ConfettiShape({
+                initialPosition: leftConfettiPosition,
+                direction: "right",
+                confettiRadius,
+                confettiColors,
+                confettiNumber,
+                emojis,
+                emojiSize,
+                canvasWidth,
+            });
+            const confettiOnTheLeft = new ConfettiShape({
+                initialPosition: rightConfettiPosition,
+                direction: "left",
+                confettiRadius,
+                confettiColors,
+                confettiNumber,
+                emojis,
+                emojiSize,
+                canvasWidth,
+            });
+            confettiGroupRight.addShapes(confettiOnTheRight);
+            confettiGroupLeft.addShapes(confettiOnTheLeft);
+        }
+        this.activeConfettiBatches.push(confettiGroupRight, confettiGroupLeft);
+        this.queueAnimationFrameIfNeeded();
+        return Promise.all([
+            confettiGroupRight.getBatchCompletePromise(),
+            confettiGroupLeft.getBatchCompletePromise(),
+        ]);
     }
-  }, {
-    key: "addConfetti",
-    value: function addConfetti() {
-      var confettiConfig = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      var _normalizeConfettiCon = normalizeConfettiConfig(confettiConfig),
-        confettiRadius = _normalizeConfettiCon.confettiRadius,
-        confettiNumber = _normalizeConfettiCon.confettiNumber,
-        confettiColors = _normalizeConfettiCon.confettiColors,
-        emojis = _normalizeConfettiCon.emojis,
-        emojiSize = _normalizeConfettiCon.emojiSize; // Use the bounding rect rather tahn the canvas width / height, because
-      // .width / .height are unset until a layout pass has been completed. Upon
-      // confetti being immediately queued on a page load, this hasn't happened so
-      // the default of 300x150 will be returned, causing an improper source point
-      // for the confetti animation.
-      var canvasRect = this.canvasLeft.getBoundingClientRect();
-      var canvasWidth = canvasRect.width;
-      var canvasHeight = canvasRect.height;
-      var yPosition = canvasHeight * 5 / 7;
-      var leftConfettiPosition = {
-        x: 0,
-        y: yPosition
-      };
-      var rightConfettiPosition = {
-        x: canvasWidth,
-        y: yPosition
-      };
-      var confettiGroupLeft = new ConfettiBatch(this.canvasLeftContext);
-      var confettiGroupRight = new ConfettiBatch(this.canvasRightContext);
-      for (var i = 0; i < confettiNumber / 2; i++) {
-        var confettiOnTheRight = new ConfettiShape({
-          initialPosition: leftConfettiPosition,
-          direction: "right",
-          confettiRadius: confettiRadius,
-          confettiColors: confettiColors,
-          confettiNumber: confettiNumber,
-          emojis: emojis,
-          emojiSize: emojiSize,
-          canvasWidth: canvasWidth
-        });
-        var confettiOnTheLeft = new ConfettiShape({
-          initialPosition: rightConfettiPosition,
-          direction: "left",
-          confettiRadius: confettiRadius,
-          confettiColors: confettiColors,
-          confettiNumber: confettiNumber,
-          emojis: emojis,
-          emojiSize: emojiSize,
-          canvasWidth: canvasWidth
-        });
-        confettiGroupRight.addShapes(confettiOnTheRight);
-        confettiGroupLeft.addShapes(confettiOnTheLeft);
-      }
-      this.activeConfettiBatches.push(confettiGroupRight, confettiGroupLeft);
-      this.queueAnimationFrameIfNeeded();
-      return Promise.all([confettiGroupRight.getBatchCompletePromise(), confettiGroupLeft.getBatchCompletePromise()]);
+    clearCanvas() {
+        this.activeConfettiBatches = [];
     }
-  }, {
-    key: "clearCanvas",
-    value: function clearCanvas() {
-      this.activeConfettiBatches = [];
+    destroyCanvas() {
+        this.canvasLeft.remove();
+        this.canvasRight.remove();
     }
-  }, {
-    key: "destroyCanvas",
-    value: function destroyCanvas() {
-      this.canvasLeft.remove();
-      this.canvasRight.remove();
-    }
-  }]);
-  return JSConfetti;
-}();
+}
 
 export { JSConfetti as default };
